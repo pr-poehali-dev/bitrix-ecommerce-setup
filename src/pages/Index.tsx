@@ -98,6 +98,7 @@ export default function Index() {
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('Все');
 
   const addToCart = (product: Product) => {
     const color = selectedColor || product.colors[0];
@@ -139,6 +140,11 @@ export default function Index() {
 
   const cartTotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const favoriteProducts = mockProducts.filter(p => favorites.includes(p.id));
+
+  const categories = ['Все', ...Array.from(new Set(mockProducts.map(p => p.category)))];
+  const filteredProducts = selectedCategory === 'Все' 
+    ? mockProducts 
+    : mockProducts.filter(p => p.category === selectedCategory);
 
   const navigation = [
     { name: 'Главная', page: 'home' as const, icon: 'Home' },
@@ -235,9 +241,23 @@ export default function Index() {
       return (
         <section className="py-12 px-4 min-h-screen">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-5xl font-bold mb-12">Каталог</h1>
+            <h1 className="text-5xl font-bold mb-8">Каталог</h1>
+            
+            <div className="flex flex-wrap gap-3 mb-12">
+              {categories.map((cat) => (
+                <Button
+                  key={cat}
+                  variant={selectedCategory === cat ? 'default' : 'outline'}
+                  onClick={() => setSelectedCategory(cat)}
+                  className="min-w-[100px]"
+                >
+                  {cat}
+                </Button>
+              ))}
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {mockProducts.map((product) => (
+              {filteredProducts.map((product) => (
                 <Card
                   key={product.id}
                   className="group cursor-pointer hover:shadow-2xl transition-all duration-300 overflow-hidden"
